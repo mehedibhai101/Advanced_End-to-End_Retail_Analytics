@@ -1,4 +1,4 @@
-# Project Background: DailyBrew Advanced Retail Analytics
+# 📊 Project Background: DailyBrew Advanced Retail Analytics
 
 **DailyBrew** is a premier coffee and beverage enterprise based in New York, serving as a cornerstone of the city’s daily morning rituals. Since its establishment, the company has grown from a single artisanal cafe to a multi-location powerhouse across **Astoria, Hell’s Kitchen, and Lower Manhattan**. Over three years of collecting data, they were data-rich but insight-poor. As the brand prepares to scale further, the focus has shifted from "serving cups" to "optimizing customer lifetime value (CLV)."
 
@@ -21,7 +21,7 @@ https://github.com/user-attachments/assets/a1cf94ee-6032-42e5-b0a3-5346bf150d7c
 
 ---
 
-# Data Structure & Initial Checks
+# 🏗️ Data Structure & Initial Checks
 
 The DailyBrew analytics engine is built on a clean Star Schema, ensuring millisecond-level reporting across nearly **1 Million records**.
 
@@ -31,12 +31,12 @@ The DailyBrew analytics engine is built on a clean Star Schema, ensuring millise
 * **`dim_stores`:** Granular data on the three primary retail hubs and one warehouse (Astoria, Hell's Kitchen, Lower Manhattan).
 * **`dim_employees`:** Tracking performance for 40+ staff members across various positions (Baristas to Store Managers).
 
-### Entity Relationship Diagram (ERD)
+### 🗺️ Entity Relationship Diagram (ERD)
 ![Entity Relationship Diagram](Dataset/entity_relationship_diagram.svg)
 
 ---
 
-# Executive Summary
+# 📋 Executive Summary
 
 ### Overview of Findings
 
@@ -44,9 +44,9 @@ DailyBrew is a high-performing operation with a total revenue of **$4.25M** and 
 
 ---
 
-# Insights Deep Dive
+# 🔍 Insights Deep Dive
 
-### The Morning Velocity Crisis
+### ⚡ The Morning Velocity Crisis
 
 * **The 3-Hour Revenue Window.** 35% of total daily revenue is compressed into the **7 AM – 10 AM** window. This peak is remarkably consistent across all three Manhattan/Queens locations.
 * **Store-Level Disparity.** While **Hell's Kitchen** and **Astoria** generate identical revenue (~$1.42M), Astoria requires 47% more transactions to reach that goal, indicating a lower AOV (Average Order Value).
@@ -54,7 +54,7 @@ DailyBrew is a high-performing operation with a total revenue of **$4.25M** and 
 
 <img width="1018" height="479" alt="Image" src="https://github.com/user-attachments/assets/fafb717c-6f7d-42ed-893b-e3ace8224990" />
 
-### The Loyalty Gap (The Membership Mirage)
+### 🧲 The Loyalty Gap (The Membership Mirage)
 
 * **The Non-Member Majority.** **50.9% of revenue ($2.16M)** comes from guest accounts (IDs 1000, 6000, 8600). These customers are currently "invisible" to our marketing efforts.
 * **The AOV Lift.** Registered loyalty members have an **8% higher AOV ($640 vs $593)** than guest shoppers, proving that membership correlates with higher basket spending.
@@ -62,13 +62,13 @@ DailyBrew is a high-performing operation with a total revenue of **$4.25M** and 
 
 <img width="330" height="299" alt="Image" src="https://github.com/user-attachments/assets/118c51f2-51ee-47de-9060-4cef4576ed60" />
 
-### The "Coffee-Plus" Attachment Rate
+### ☕ The "Coffee-Plus" Attachment Rate
 
 * **Single-Item Dominance.** Only **23% of transactions** involve more than one product category. The majority of customers are "Coffee-Only" or "Tea-Only."
 * **The Bakery Opportunity.** Despite a high profit margin, **Bakery items** account for only **10.6% of total revenue**.
 * **Missed Synergy.** There is a low correlation between "Whole Bean" sales and "Merchandise/Branded" sales, indicating that our most dedicated home-brewers are not buying our equipment.
 
-### The Promotion Paradox
+### 🏷️ The Promotion Paradox
 
 * **Underutilized Leverage.** Only **0.7% of total revenue ($29k)** is driven by promotional items. The sales uplift during promotional days is less than 3%.
 * **Pricing Rigidity.** DailyBrew operates on a static pricing model. There is no evidence of dynamic "Happy Hour" pricing or bundle discounts being used to shift volume to off-peak hours.
@@ -78,7 +78,7 @@ DailyBrew is a high-performing operation with a total revenue of **$4.25M** and 
 
 ---
 
-# Recommendations:
+# 🚀 Recommendations:
 
 * **The "Morning Bundle" Pilot:** Launch a "Coffee + Pastry" discount strictly between **7 AM and 9 AM**. Target a shift from 23% to **35% multi-item transactions** to capitalize on the morning traffic.
 * **The "Guest-to-Member" Blitz:** Implement an immediate POS prompt: *"Join Loyalty today for $1 off your current order."* Capturing just 20% of current guest revenue into the loyalty program would add **$400k+ to our "Known" database**.
@@ -88,8 +88,64 @@ DailyBrew is a high-performing operation with a total revenue of **$4.25M** and 
 
 ---
 
-# Assumptions and Caveats:
+## ⚠️ Assumptions and Caveats:
 
 * **Customer Membership:** Customer IDs 1000, 6000, and 8600 are confirmed as "General Guest" accounts used by POS for non-members.
 * **COGS Calculation Logic:** Profit margins were calculated using `current_cost` from the product table, assuming no significant variance in historical cost during the analyzed period.
 * **Transaction SID:** For the lack of unique transaction id, transactions with identical `transaction_id`, `date`, `store_id` and `customer_id` are treated as a single transaction.
+
+---
+
+## 📂 Repository Structure
+
+```
+Advanced_End-to-End_Retial_Analytics/
+│
+├── Dashboard/                            # Final visualization and reporting outputs
+│   ├── assets/                           # Visual elements used in reports (logos, icons, etc.)
+│   │   ├── Icons/                        # Collection of icons used in KPI Cards/Buttons
+│   │   │   ├── Button Icons/
+│   │   │   │   ├── Navigation/
+│   │   │   │   └── Others/
+│   │   │   └── KPI Icons/
+│   │   ├── logo.png                      # The brand logo of DailyBrew
+│   │   └── Theme.json                    # Custom Power BI color palette for dashboard
+│   ├── live_dashboard.md                 # Links to hosted Power BI Service report
+│   └── static_overview.pdf               # Exported PDF version of the final dashboard for quick viewing
+│
+├── Data Cleaning/                        # Power Query M Codes for cleaning tables of the dataset.
+│
+├── Dataset/                              # The data foundation of the project
+│   ├── entity_relationship_diagram.svg   # Visual map of table connections and cardinality
+│   ├── Sales Data/
+│   │   └── Sales by Store.csv
+│   ├── Calendar.csv
+│   ├── Customer Lookup.csv
+│   ├── Employee Lookup.csv
+│   ├── Product Lookup.csv
+│   └── Store Lookup.csv
+│
+├── DAX Calculations/                     # Business logic and analytical formulas
+│   ├── calculated_column.md              # Definitions for static row-level logic (e.g., hour buckets)
+│   └── measures.md                       # Dynamic aggregation formulas (e.g., Total Revenue, MoM Growth)
+│
+├── LICENSE                               # Legal terms for code and data usage
+└── README.md                             # Project background, summary and key insights
+``` 
+
+---
+
+## 🛡️ License
+
+This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute it with proper attribution.
+
+---
+
+## 🌟 About Me
+
+Hi! I’m **Mehedi Hasan**, well known as **Mehedi Bhai**, a Certified Data Analyst with strong proficiency in *Excel*, *Power BI*, and *SQL*. I specialize in data visualization, transforming raw data into clear, meaningful insights that help businesses make impactful data-driven decisions.
+
+Let’s connect:
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge\&logo=linkedin\&logoColor=white)](https://www.linkedin.com/in/mehedi-hasan-b3370130a/)
+[![YouTube](https://img.shields.io/badge/YouTube-red?style=for-the-badge\&logo=youtube\&logoColor=white)](https://youtube.com/@mehedibro101?si=huk7eZ05dOwHTs1-)
