@@ -177,12 +177,12 @@ This documentation provides a comprehensive overview of the **Calculated Tables*
 
 Field parameters are utilized to allow report users to toggle between different metrics dynamically within the same visual.
 
-    * **Parameter Product Metrics**: Allows switching between Sales and Transaction counts.
-    * **Logic**: `{"Total Sales", "Transactions"}`
-    
-    
-    * **Parameter Trend Metrics**: Used for time-series analysis to switch the focus between Revenue, Volume, or Footfall.
-    * **Logic**: `{"Total Sales", "Transactions", "Customers"}`
+ * **Parameter Product Metrics**: Allows switching between Sales and Transaction counts.
+ * **Logic**: `{"Total Sales", "Transactions"}`
+ 
+ 
+ * **Parameter Trend Metrics**: Used for time-series analysis to switch the focus between Revenue, Volume, or Footfall.
+ * **Logic**: `{"Total Sales", "Transactions", "Customers"}`
 
 
 
