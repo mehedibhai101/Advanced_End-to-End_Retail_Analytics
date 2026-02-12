@@ -1,0 +1,173 @@
+let
+    // Extracted the data from Sales folder.
+    Source = Folder.Files("your_sales_folder_path"),
+
+    // Such transformations are applied so that it will allow allow flexible integration of future data.
+    #"--- Sales Folder Automation" = "",
+    
+    // Removed files that do not contain the word "Sales" in order to prevent unrelated or unexpected data from being included in the folder import.
+    #"Filtered Rows" = Table.SelectRows(#"Source", each Text.Contains([Name], "Sales")),
+    
+    // Excluded hidden files to avoid system or temporary files interfering with the data import.
+    #"Filtered Hidden Files" = Table.SelectRows(#"Filtered Rows", each [Attributes]?[Hidden]? <> true),
+    
+    // Converted the binary content of each imported file into a table.
+    #"Converted CSV Content" = Table.AddColumn(#"Filtered Hidden Files", "Sales Table", each Csv.Document([Content])),
+    
+    // Retained only the Sales table and removed all other unnecessary data included in the source.
+    #"Removed Other Columns" = Table.SelectColumns(#"Converted CSV Content", {"Sales Table"}),
+
+    // Expanded the transformed table column to include all fields from the sample file.
+    #"Expanded Table Column" = Table.ExpandTableColumn(
+        #"Removed Other Columns", 
+        "Sales Table", 
+        {"Column1", "Column2", "Column3", "Column4", "Column5", "Column6", "Column7", "Column8", "Column9", "Column10", "Column11", "Column12", "Column13"}, {"Sales Data.Column1", "Sales Data.Column2", "Sales Data.Column3", "Sales Data.Column4", "Sales Data.Column5", "Sales Data.Column6", "Sales Data.Column7", "Sales Data.Column8", "Sales Data.Column9", "Sales Data.Column10", "Sales Data.Column11", "Sales Data.Column12", "Sales Data.Column13"}
+    ),
+
+
+        #"--- Data Cleaning1" = "",
+
+    // Promoted the first row to headers for proper column identification.
+    #"Promoted Headers" = Table.PromoteHeaders(#"Expanded Table Column", [PromoteAllScalars=true]),
+    // Removed leading and trailing whitespaces.
+    #"Trimmed Text" = Table.TransformColumns(
+        #"Promoted Headers",
+        {
+            {"transaction_id", Text.Trim, type text},
+            {"transaction_date", Text.Trim, type text},
+            {"transaction_time", Text.Trim, type text},
+            {"store_id", Text.Trim, type text},
+            {"staff_id", Text.Trim, type text},
+            {"customer_id", Text.Trim, type text},
+            {"instore_yn", Text.Trim, type text},
+            {"order", Text.Trim, type text},
+            {"line_item_id", Text.Trim, type text},
+            {"product_id", Text.Trim, type text},
+            {"quantity_sold", Text.Trim, type text},
+            {"unit_price", Text.Trim, type text},
+            {"promo_item_yn", Text.Trim, type text}
+        }
+    ),
+    
+    // Assigned the correct data type to each field.
+    #"Changed Type" = Table.TransformColumnTypes(
+        #"Trimmed Text",
+        {
+            {"transaction_id", Int64.Type},
+            {"transaction_date", type date},
+            {"transaction_time", type time},
+            {"store_id", Int64.Type},
+            {"staff_id", Int64.Type},
+            {"customer_id", Int64.Type},
+            {"instore_yn", type text},
+            {"order", Int64.Type},
+            {"line_item_id", Int64.Type},
+            {"product_id", Int64.Type},
+            {"quantity_sold", Int64.Type},
+            {"unit_price", type number},
+            {"promo_item_yn", type text}
+        }
+    ),
+
+    // Filtered the table to include only rows within the selected date range.
+    #"Filtered by Date" =
+    Table.SelectRows(
+        #"Changed Type",
+        each
+            (_StartDateParam = null or [transaction_date] >= _StartDateParam)
+            and (_EndDateParam = null or [transaction_date] <= _EndDateParam)
+    ),
+    // Removed columns that were faulty, irrelevant to analysis, or belonged to dimensional tables.
+    #"Removed Unnecessary Columns" = Table.SelectColumns(#"Filtered by Date",{"transaction_date", "transaction_time", "store_id", "staff_id", "customer_id", "instore_yn", "product_id", "quantity_sold", "unit_price", "promo_item_yn"}),
+    
+    // Removed records that were identical to existing ones.
+    #"Removed Duplicates" = Table.Distinct(#"Removed Unnecessary Columns"),
+    
+    
+        // Generated unique transaction IDs and line numbers to track each transaction accurately.
+        #"--- Custom TrxID & Line Number" = "",
+    
+    // to obtain unique combinations of transaction date, time, store, and customer, representing individual transactions.
+    #"Grouped Rows" = Table.Group(
+        #"Removed Duplicates",
+        {"transaction_date", "transaction_time", "store_id", "customer_id"},
+        {{"Group", each _, type table [
+            transaction_date=nullable date,
+            transaction_time=nullable time,
+            store_id=nullable number,
+            staff_id=nullable number,
+            customer_id=nullable number,
+            instore_yn=nullable text,
+            product_id=nullable number,
+            quantity_sold=nullable number,
+            unit_price=nullable number,
+            promo_item_yn=nullable text
+        ]}}
+    ),
+    
+    // which represents Transaction ID, sorted sequencially by date and time.
+    #"Added Index" = Table.AddIndexColumn(#"Grouped Rows", "Transaction SID", 1, 1, Int64.Type),
+    
+    // Created an Order Line Number to track each product within a transaction.
+    #"Added Custom Column" = Table.AddColumn(
+        #"Added Index",
+        "Custom",
+        each Table.AddIndexColumn([Group], "Line Number", 1, 1, Int64.Type)
+    ),
+    
+    // Kept only the columns necessary for the final table and removed all others.
+    #"Removed Columns" = Table.RemoveColumns(#"Added Custom Column", {"Group"}),
+    
+    // Expanded the order line details back into the main table.
+    #"Expanded Custom" = Table.TransformColumnTypes(
+        Table.ExpandTableColumn(
+            #"Removed Columns",
+            "Custom",
+            {"staff_id", "instore_yn", "product_id", "quantity_sold", "unit_price", "Line Number", "promo_item_yn"},
+            {"staff_id", "instore_yn", "product_id", "quantity_sold", "unit_price", "Line Number", "promo_item_yn"}
+        ),
+        {
+            {"staff_id", Int64.Type},
+            {"instore_yn", type text},
+            {"product_id", Int64.Type},
+            {"quantity_sold", Int64.Type},
+            {"unit_price", Int16.Type},
+            {"Line Number", Int64.Type},
+            {"promo_item_yn", type text}
+        }
+    ),
+
+
+        #"--- Data Cleaning2" = "",
+    
+    // Reordered columns to follow a logical sequence.
+    #"Reordered Columns" = Table.ReorderColumns(
+        #"Expanded Custom",
+        {"Transaction SID", "transaction_date", "transaction_time", "store_id", "customer_id", "staff_id", "instore_yn", "Line Number", "product_id", "unit_price", "quantity_sold", "promo_item_yn"}
+    ),
+    
+    // Converted boolean values into descriptive names for Order Channel and Product Type to improve clarity for business stakeholders.
+    #"Replaced Value" = Table.TransformColumns(
+        #"Reordered Columns",
+        {"instore_yn", each if _ = "N" then "Online" else "In-Store", type text}  //Blank records from store-8 were considered as "In-Store".
+    ),
+    
+    // Renamed columns to make them clear and understandable for business stakeholders.
+    #"Renamed Columns" = Table.RenameColumns(
+        #"Replaced Value",
+        {
+            {"transaction_date", "Transaction Date"},
+            {"transaction_time", "Transaction Time"},
+            {"store_id", "Store ID"},
+            {"customer_id", "Customer ID"},
+            {"staff_id", "Staff ID"},
+            {"instore_yn", "Channel"},
+            {"product_id", "Product ID"},
+            {"unit_price", "Unit Price"},
+            {"quantity_sold", "Qty Sold"}
+        }
+    ),
+    // Removed rows that contain errors to ensure clean final dataset.
+    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Renamed Columns")
+in
+    #"Removed Errors"
