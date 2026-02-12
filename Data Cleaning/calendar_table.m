@@ -1,5 +1,5 @@
 let
-    // 1. Setup: Define the date range based on your existing pizza sales table
+    // 1. Setup: Define the date range based on your existing fact table
     // Ensure "Clean_Ingredients_List" matches your sales query's final step
     Start_Date = Number.From(List.Min(#"table_name"[date_column])),
     End_Date = Number.From(List.Max(#"table_name"[date_column])),
