@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/a1cf94ee-6032-42e5-b0a3-5346bf150d7c
 
 **DAX queries regarding various analytical calculations can be found [[here]](https://github.com/mehedibhai101/Advanced_End-to-End_Retail_Analytics/tree/main/DAX%20Calculations).**
 
-**An interactive Power BI dashboard used to report and explore sales trends can be found [[here]](https://app.powerbi.com/view?r=eyJrIjoiYjRlM2U5ZmYtZmQyZS00MzE5LThjNzEtMjE5ZjQ2ZTQ3MTU1IiwidCI6IjAwMGY1Mjk5LWU2YTUtNDYxNi1hNTI4LWJjZTNlNGUyYjk4ZCIsImMiOjEwfQ%3D%3D).**
+**An interactive Power BI dashboard used to report and explore analysis can be found [[here]](https://app.powerbi.com/view?r=eyJrIjoiYjRlM2U5ZmYtZmQyZS00MzE5LThjNzEtMjE5ZjQ2ZTQ3MTU1IiwidCI6IjAwMGY1Mjk5LWU2YTUtNDYxNi1hNTI4LWJjZTNlNGUyYjk4ZCIsImMiOjEwfQ%3D%3D).**
 
 ---
 
